@@ -2,100 +2,104 @@
 
 public class Melee : MonoBehaviour
 {
-    public float moveSpeed = 3f; // Tốc độ di chuyển của Melee Tower
-    public float attackRange = 2f; // Phạm vi tấn công của Melee Tower
-    public int damage = 5; // Sát thương của Melee Tower
+    [Header("Movement")]
+    public float speed;
+    public float lineOfSight; // Phạm vi nhìn thấy enemy
 
-    private Transform target; // Mục tiêu tấn công (Goblin)
-    private bool isAttacking = false; // Trạng thái tấn công
-    private EnemyController currentEnemy; // Đối tượng EnemyController đang được tấn công
+    [Header("Attack")]
+    private Transform enemy;
+    private Vector3 basePoint; // Điểm cơ sở để quay về
+    public float attackRange;
+    public float speedAttack;
+    private float nextAttackTime; // Thời gian tiếp theo có thể tấn công
+    private bool isAttacking = false;
+
+    private void Start()
+    {
+        basePoint = transform.position; // Gán vị trí hiện tại của người chơi
+    }
 
     void Update()
     {
-        if (!isAttacking)
+        FindClosestEnemy();
+
+        if (enemy != null)
         {
-            FindAndAttackTarget();
-        }
-        else if (target != null)
-        {
-            // Kiểm tra khoảng cách để quyết định di chuyển hoặc tấn công
-            float distanceToTarget = Vector3.Distance(transform.position, target.position);
-            if (distanceToTarget > attackRange)
+            float distanceFromEnemy = Vector2.Distance(enemy.position, transform.position);
+
+            // Nếu khoảng cách trong phạm vi nhìn thấy nhưng ngoài phạm vi tấn công
+            if (distanceFromEnemy < lineOfSight && distanceFromEnemy > attackRange)
             {
-                MoveTowardsTarget();
+                isAttacking = false;
+                // Di chuyển về phía người chơi
+                transform.position = Vector2.MoveTowards(transform.position, enemy.position, speed * Time.deltaTime);
+
+                // Điều chỉnh hướng của kẻ địch về phía người chơi
+                if (transform.position.x < enemy.position.x)
+                {
+                    transform.localScale = new Vector2(-1, 1);
+                }
+                else
+                {
+                    transform.localScale = new Vector2(1, 1);
+                }
+            }
+            // Nếu khoảng cách trong phạm vi tấn công và có thể tấn công
+            else if (distanceFromEnemy <= attackRange && nextAttackTime < Time.time)
+            {
+                isAttacking = true;
+                nextAttackTime = Time.time + speedAttack; // Cập nhật thời gian tiếp theo có thể tấn công
+                Attack();
+            }
+        }
+        else
+        {
+            // Di chuyển về điểm cơ sở nếu không có kẻ địch
+            isAttacking = false;
+            transform.position = Vector2.MoveTowards(transform.position, basePoint, speed * Time.deltaTime);
+
+            // Điều chỉnh hướng của kẻ địch về phía điểm cơ sở
+            if (transform.position.x < basePoint.x)
+            {
+                transform.localScale = new Vector2(-1, 1);
             }
             else
             {
-                AttackEnemy();
+                transform.localScale = new Vector2(1, 1);
             }
         }
     }
 
-    void FindAndAttackTarget()
+    void FindClosestEnemy()
     {
-        // Tìm tất cả các enemy trong phạm vi tấn công
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, attackRange);
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        float closestDistance = Mathf.Infinity;
+        Transform closestEnemy = null;
 
-        float shortestDistance = Mathf.Infinity;
-        Transform nearestEnemy = null;
-
-        foreach (var collider in colliders)
+        foreach (GameObject go in enemies)
         {
-            if (collider.CompareTag("Enemy"))
+            float distance = Vector2.Distance(transform.position, go.transform.position);
+            if (distance < closestDistance)
             {
-                float distanceToEnemy = Vector3.Distance(transform.position, collider.transform.position);
-                if (distanceToEnemy < shortestDistance)
-                {
-                    shortestDistance = distanceToEnemy;
-                    nearestEnemy = collider.transform;
-                }
+                closestDistance = distance;
+                closestEnemy = go.transform;
             }
         }
 
-        if (nearestEnemy != null)
-        {
-            Attack(nearestEnemy);
-        }
+        enemy = closestEnemy;
     }
 
-    void Attack(Transform enemy)
+    void Attack()
     {
-        // Bắt đầu tấn công và đi theo enemy
-        target = enemy;
-        isAttacking = true;
-
-        // Gọi hàm dừng di chuyển của enemy và bắt đầu tấn công
-        currentEnemy = target.GetComponent<EnemyController>();
-        if (currentEnemy != null)
-        {
-            currentEnemy.StopMovingByMelee();
-            currentEnemy.StartAttack();
-        }
+        // Thêm logic tấn công ở đây (ví dụ: giảm máu của kẻ địch)
+        Debug.Log("Tấn công kẻ địch!");
     }
 
-    void MoveTowardsTarget()
-    {
-        // Di chuyển về phía enemy
-        transform.Translate((target.position - transform.position).normalized * moveSpeed * Time.deltaTime);
-    }
-
-    void AttackEnemy()
-    {
-        // Gây sát thương cho enemy
-        if (currentEnemy != null)
-        {
-            //currentEnemy.TakeDamage(damage);
-            //currentEnemy.EndAttack();
-        }
-
-        // Đặt lại trạng thái sau khi tấn công
-        target = null;
-        isAttacking = false;
-    }
-
+    // Vẽ phạm vi nhìn thấy và phạm vi tấn công trong chế độ Editor
     private void OnDrawGizmosSelected()
     {
-        // Vẽ hình tròn biểu thị phạm vi tấn công
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, lineOfSight);
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }

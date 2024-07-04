@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -9,7 +9,7 @@ public class BuildTower : MonoBehaviour
     [Space(30)]
     [Header("Prizes")]
     public int prize;
-    
+
     private TextMeshProUGUI prizeText;
 
     private GameObject buildCanvas;
@@ -30,22 +30,21 @@ public class BuildTower : MonoBehaviour
         buildCanvas.SetActive(true);
         upgradeTouchCanvas.SetActive(false);
         AssignButtonFunction();
-        if (towerController != null )
+        if (towerController != null)
         {
             towerController.enabled = false;
-        }             
+        }
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if(prizeText != null)
+        if (prizeText != null)
         {
             prizeText.text = "Prize: " + prize;
 
-            if(prize < CoinManager.instance.currentCoins)
+            if (prize < CoinManager.instance.currentCoins)
             {
-               prizeText.color = Color.white;
+                prizeText.color = Color.white;
             }
             else if (prize > CoinManager.instance.currentCoins)
             {
@@ -53,6 +52,7 @@ public class BuildTower : MonoBehaviour
             }
         }
     }
+
     public void Build()
     {
         if (CoinManager.instance.SpendCoins(prize))
@@ -63,6 +63,11 @@ public class BuildTower : MonoBehaviour
                 upgradeTouchCanvas.SetActive(true);
                 buildCanvas.SetActive(false);
                 gameObject.layer = LayerMask.NameToLayer("Tower");
+                ArcherMelee archerMelee = GetComponent<ArcherMelee>();
+                if (archerMelee != null)
+                {
+                    archerMelee.isBuilt = true; // Đặt isBuilt thành true sau khi trụ được xây dựng
+                }
                 if (buildController != null)
                 {
                     buildController.spawnedPrefab = null;
@@ -70,14 +75,16 @@ public class BuildTower : MonoBehaviour
             }
         }
     }
+
     public void DestroyBuild()
     {
         Destroy(gameObject);
         Debug.Log(gameObject);
     }
+
     public void AssignButtonFunction()
     {
-        if(buildCanvas != null )
+        if (buildCanvas != null)
         {
             buildButton = buildCanvas.transform.GetChild(0).gameObject.GetComponent<Button>();
             destroyBuildButton = buildCanvas.transform.GetChild(1).gameObject.GetComponent<Button>();
