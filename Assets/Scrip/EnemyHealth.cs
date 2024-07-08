@@ -23,10 +23,6 @@ public class EnemyHealth : MonoBehaviour
         {
             Die();
         }
-        else
-        {
-            // Thực hiện các hành động khi nhận sát thương như phát hiện, hiệu ứng, v.v.
-        }
     }
 
     private void Die()

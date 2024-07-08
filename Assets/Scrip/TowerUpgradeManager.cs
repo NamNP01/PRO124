@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -13,19 +13,21 @@ public class TowerUpgradeManager : MonoBehaviour
     public TextMeshProUGUI levelText;
     public TextMeshProUGUI upgradePrizeText;
     public TextMeshProUGUI sellPrizeText;
+    public List<GameObject> towerPrefabs; // Danh sách các prefab cho các cấp độ trụ
     private TowerController towerController;
     private int currentLevel;
     private int currentUpgradePrize;
-    private int currentsellPrize;
+    private int currentSellPrize;
+
     void Start()
     {
         upgradeCanvas.SetActive(false);
         currentLevel = 1;
         currentUpgradePrize = CoinManager.instance.upgradeStartPrize;
-        currentsellPrize = CoinManager.instance.sellStartPrize;
+        currentSellPrize = CoinManager.instance.sellStartPrize;
         levelText.text = "Level: " + currentLevel.ToString();
         upgradePrizeText.text = "Prize: " + currentUpgradePrize.ToString();
-        sellPrizeText.text = "Prize: " + currentsellPrize.ToString();
+        sellPrizeText.text = "Prize: " + currentSellPrize.ToString();
         towerController = gameObject.GetComponent<TowerController>();
         if (touchButton != null)
         {
@@ -37,12 +39,13 @@ public class TowerUpgradeManager : MonoBehaviour
             upgradeButton.onClick.RemoveAllListeners();
             upgradeButton.onClick.AddListener(Upgrade);
         }
-        if(sellButton != null)
+        if (sellButton != null)
         {
             sellButton.onClick.RemoveAllListeners();
             sellButton.onClick.AddListener(Sell);
         }
     }
+
     private void Update()
     {
         if (upgradePrizeText != null)
@@ -53,58 +56,50 @@ public class TowerUpgradeManager : MonoBehaviour
             {
                 upgradePrizeText.color = Color.white;
             }
-            else if (currentUpgradePrize > CoinManager.instance.currentCoins)
+            else
             {
                 upgradePrizeText.color = Color.red;
             }
         }
     }
+
     public void Upgrade()
     {
-        if (towerController != null && currentLevel < 5)
+        if (currentLevel < towerPrefabs.Count)
         {
             if (CoinManager.instance.SpendCoins(currentUpgradePrize))
             {
-                towerController.attackRange += 0.5f;
-                towerController.attackRate += 0.5f;
-                towerController.damage += 5;
+                Vector3 position = transform.position;
+                Quaternion rotation = transform.rotation;
 
-                //towerController.iceVariables.iceSlowRate += 0.05f;
+                Destroy(gameObject);
 
-                towerController.fireVariables.damageOverTimeInterval -= 0.1f;
-                towerController.fireVariables.fireDamage += 2;
+                GameObject newTower = Instantiate(towerPrefabs[currentLevel], position, rotation);
+                TowerUpgradeManager newTowerUpgradeManager = newTower.GetComponent<TowerUpgradeManager>();
 
-                towerController.stoneVariables.damageOverTimeInterval -= 0.1f;
-                towerController.stoneVariables.stoneDamage += 2;
+                newTowerUpgradeManager.currentLevel = currentLevel + 1;
+                newTowerUpgradeManager.currentUpgradePrize = currentUpgradePrize + CoinManager.instance.upgradePlusPrize;
+                newTowerUpgradeManager.currentSellPrize = currentSellPrize + CoinManager.instance.sellPlusPrize;
 
-                towerController.RangeCircle();
+                newTowerUpgradeManager.levelText.text = "Level: " + newTowerUpgradeManager.currentLevel.ToString();
+                newTowerUpgradeManager.upgradePrizeText.text = "Prize: " + newTowerUpgradeManager.currentUpgradePrize.ToString();
+                newTowerUpgradeManager.sellPrizeText.text = "Prize: " + newTowerUpgradeManager.currentSellPrize.ToString();
 
-                currentLevel += 1;
-
-                currentUpgradePrize += CoinManager.instance.upgradePlusPrize;
-                currentsellPrize += CoinManager.instance.sellPlusPrize;
-                upgradePrizeText.text = "Prize: " + currentUpgradePrize.ToString();
-                sellPrizeText.text = "Prize: " + currentsellPrize.ToString();
-
-                levelText.text = "Level: " + currentLevel.ToString();
-                if (currentLevel >= 5)
+                if (newTowerUpgradeManager.currentLevel >= towerPrefabs.Count)
                 {
-                    levelText.text = "Max: " + currentLevel.ToString();
+                    newTowerUpgradeManager.levelText.text = "Max: " + newTowerUpgradeManager.currentLevel.ToString();
                 }
-            }
-            else if (towerController == null)
-            {
-                towerController = gameObject.GetComponent<TowerController>();
-                return;
             }
         }
     }
+
     public void Sell()
     {
-        CoinManager.instance.AddCoins(currentsellPrize);       
-        sellPrizeText.text = "Prize: " + currentsellPrize.ToString();
+        CoinManager.instance.AddCoins(currentSellPrize);
+        sellPrizeText.text = "Prize: " + currentSellPrize.ToString();
         Destroy(gameObject);
     }
+
     public void Touch()
     {
         upgradeCanvas.SetActive(true);
@@ -115,6 +110,7 @@ public class TowerUpgradeManager : MonoBehaviour
             touchButton.onClick.AddListener(Close);
         }
     }
+
     public void Close()
     {
         upgradeCanvas.SetActive(false);

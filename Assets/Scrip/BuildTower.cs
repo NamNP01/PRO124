@@ -27,6 +27,7 @@ public class BuildTower : MonoBehaviour
         buildCanvas = transform.GetChild(0).gameObject;
         upgradeTouchCanvas = transform.GetChild(1).gameObject;
         prizeText = buildCanvas.transform.GetChild(2).gameObject.GetComponent<TextMeshProUGUI>();
+
         buildCanvas.SetActive(true);
         upgradeTouchCanvas.SetActive(false);
         AssignButtonFunction();
@@ -63,7 +64,7 @@ public class BuildTower : MonoBehaviour
                 upgradeTouchCanvas.SetActive(true);
                 buildCanvas.SetActive(false);
                 gameObject.layer = LayerMask.NameToLayer("Tower");
-                ArcherMelee archerMelee = GetComponent<ArcherMelee>();
+                ArcherTower archerMelee = GetComponent<ArcherTower>();
                 if (archerMelee != null)
                 {
                     archerMelee.isBuilt = true; // Đặt isBuilt thành true sau khi trụ được xây dựng

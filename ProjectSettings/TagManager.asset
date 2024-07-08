@@ -10,6 +10,8 @@ TagManager:
   - Manager
   - WayEnemy
   - Melee
+  - Level1
+  - IceSpell
   layers:
   - Default
   - TransparentFX

@@ -1,12 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 [System.Serializable]
+
 public class EnemyType
 {
     public GameObject enemyPrefab; // Prefab của kẻ địch
     public int count; // Số lượng loại kẻ địch này
+    public float spawnInterval; // Thời gian giữa mỗi lần spawn của loại kẻ địch này
 }
 
 [System.Serializable]
@@ -20,6 +23,7 @@ public class EnemySpawner : MonoBehaviour
     public List<Wave> waves; // Danh sách các đợt sóng
     public List<Transform> spawnPoints; // Danh sách các điểm spawn
     public float waveInterval = 20f; // Khoảng thời gian giữa các đợt sóng (tính bằng giây)
+    public TextMeshProUGUI WaveText;
 
     private int currentWave = 0; // Đợt sóng hiện tại
     private float nextWaveTime; // Thời gian cho đợt sóng tiếp theo
@@ -54,6 +58,7 @@ public class EnemySpawner : MonoBehaviour
 
     void StartNextWave()
     {
+
         // Kiểm tra nếu hết đợt sóng
         if (currentWave >= waves.Count)
         {
@@ -66,7 +71,7 @@ public class EnemySpawner : MonoBehaviour
 
         // Tăng số đợt sóng lên
         currentWave++;
-
+        WaveText.text = "Wave " + currentWave;
         // Spawn kẻ địch cho đợt sóng này
         foreach (EnemyType enemyType in wave.enemies)
         {
@@ -82,7 +87,7 @@ public class EnemySpawner : MonoBehaviour
         for (int i = 0; i < enemyType.count; i++)
         {
             SpawnEnemy(enemyType.enemyPrefab);
-            yield return new WaitForSeconds(1f / enemyType.count); // Điều chỉnh tốc độ spawn cho từng kẻ địch
+            yield return new WaitForSeconds(enemyType.spawnInterval); // Sử dụng spawnInterval cho từng kẻ địch
         }
     }
 

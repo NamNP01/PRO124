@@ -1,17 +1,22 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ProjectileController : MonoBehaviour
 {
     private Transform target;
     public float speed = 10f;
-    public int damage=6;
+    public int damage = 6;
+    public ArcherTower.TowerType towerType;
+    private float slowAmount;
+    private float slowTime;
 
-    public void Seek(Transform target,int damage)
+    public void Seek(Transform target, int damage, ArcherTower.TowerType towerType, float slowAmount, float slowTime)
     {
         this.target = target;
         this.damage = damage;
+        this.towerType = towerType;
+        this.slowAmount = slowAmount;
+        this.slowTime = slowTime;
     }
 
     void Update()
@@ -46,5 +51,21 @@ public class ProjectileController : MonoBehaviour
         {
             enemyHealth.TakeDamage(damage);
         }
+
+        if (towerType == ArcherTower.TowerType.Magic)
+        {
+            EnemyController enemyController = target.GetComponent<EnemyController>();
+            if (enemyController != null)
+            {
+                StartCoroutine(SlowEnemy(enemyController, slowAmount, slowTime)); 
+            }
+        }
+    }
+
+    IEnumerator SlowEnemy(EnemyController enemy, float slowAmount, float duration)
+    {
+        enemy.SlowDown(slowAmount);
+        yield return new WaitForSeconds(duration);
+        enemy.ResetSpeed(slowAmount);
     }
 }

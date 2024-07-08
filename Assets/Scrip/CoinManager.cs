@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -15,7 +15,7 @@ public class CoinManager : MonoBehaviour
     public int archer;
     public int stone;
     public int fire;
-    public int ice;
+    public int magic;
     [Space(20)]
     [Header("Upgrade Prizes")]
     public int upgradeStartPrize;
