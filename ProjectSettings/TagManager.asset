@@ -12,6 +12,7 @@ TagManager:
   - Melee
   - Level1
   - IceSpell
+  - Dynamite
   layers:
   - Default
   - TransparentFX

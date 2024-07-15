@@ -1,12 +1,21 @@
 ﻿using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class EnemyHealth : MonoBehaviour
 {
     public int maxHealth = 100;
     public int currentHealth;
     public int coin;
-    public Animator ani;
+    public Animator ani; 
+    private Transform target;
+    public int damage;
 
+
+    public void Seek(Transform target, int damage, ArcherTower.TowerType towerType, float slowAmount, float slowTime)
+    {
+        this.target = target;
+        this.damage = damage;
+    }
     void Start()
     {
         currentHealth = maxHealth;
@@ -24,7 +33,21 @@ public class EnemyHealth : MonoBehaviour
             Die();
         }
     }
-
+    //private void OnTriggerEnter2D(Collider2D collision)
+    //{
+    //    if (collision.gameObject.CompareTag("Dynamite")&&collision.gameObject!= target)
+    //    {
+    //        TakeDamage(damage);
+    //    }
+    //}
+    public void Heal(int amount)
+    {
+        currentHealth += amount;
+        if (currentHealth > maxHealth)
+        {
+            currentHealth = maxHealth;
+        }
+    }
     private void Die()
     {
         // Thực hiện các hành động khi enemy chết như phát hiện animation, thêm tiền, v.v.

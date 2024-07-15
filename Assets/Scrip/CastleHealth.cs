@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -19,17 +18,18 @@ public class CastleHealth : MonoBehaviour
     public float currentTime = 0f;
 
     public TextMeshProUGUI HeartsText;
-    //public Image[] hearts;
-    //public Sprite fullHeart;
-    //public Sprite emptyHeart;
+    public Image[] star;
+    public Sprite starSprite;
+    public GameObject[] Continue;
+
     void Start()
     {
         currenthealth = numOfHearts;
         HeartsText.text = "" + currenthealth;
 
         startingTime = Time.time;
-
     }
+
     void Update()
     {
         currentTime = Time.time - startingTime;
@@ -47,42 +47,35 @@ public class CastleHealth : MonoBehaviour
             }
         }
     }
-    // Update is called once per frame
-    //void Update()
-    //{
+    public void UpdateStars()
+    {
+        if (currenthealth < 10)
+        {
+            Continue[0].SetActive(true);
+            Continue[1].SetActive(false);
+            Continue[2].SetActive(false);
+            star[0].gameObject.GetComponent<Image>().sprite = starSprite;
+        }
+        else if (currenthealth < 15)
+        {
+            Continue[1].SetActive(true);
+            Continue[2].SetActive(false);
+            Continue[0].SetActive(false);
 
-    //    if (currenthealth > numOfHearts)
-    //    {
-    //        currenthealth = numOfHearts;
-    //    }
+            star[0].gameObject.GetComponent<Image>().sprite = starSprite;
+            star[1].gameObject.GetComponent<Image>().sprite = starSprite;
+        }
+        else
+        {
+            Continue[2].SetActive(true);
+            Continue[1].SetActive(false);
+            Continue[0].SetActive(false);
+            star[0].gameObject.GetComponent<Image>().sprite = starSprite;
+            star[1].gameObject.GetComponent<Image>().sprite = starSprite;
+            star[2].gameObject.GetComponent<Image>().sprite = starSprite;
+        }
+    }
 
-    //    for (int i = 0; i < hearts.Length; i++)
-    //    {
-    //        if (i < currenthealth)
-    //        {
-    //            hearts[i].sprite = fullHeart;
-    //            Color color = Color.white;
-    //            color.a = 255;
-    //            hearts[i].color = color;
-    //        }
-    //        else
-    //        {
-    //            hearts[i].sprite = fullHeart;
-    //            Color color = Color.red;
-    //            color.a = 0.5f;
-    //            hearts[i].color = color;
-    //        }
-
-    //        if (i < numOfHearts)
-    //        {
-    //            hearts[i].enabled = true;
-    //        }
-    //        else
-    //        {
-    //            hearts[i].enabled = false;
-    //        }
-    //    }
-    //}
     public void hurt()
     {
         currenthealth -= 1;
@@ -92,6 +85,7 @@ public class CastleHealth : MonoBehaviour
             StartCoroutine(GameOverAfterDelay(0f));
         }
     }
+
     public void gameOver()
     {
         StartCoroutine(GameOverAfterDelay(1f));
@@ -99,6 +93,7 @@ public class CastleHealth : MonoBehaviour
         Time.timeScale = 0f;
         IsPaused = true;
     }
+
     IEnumerator GameOverAfterDelay(float delayTime)
     {
         yield return new WaitForSeconds(delayTime);
@@ -113,6 +108,7 @@ public class CastleHealth : MonoBehaviour
             hurt();
         }
     }
+
     void UpdateTimerDisplay()
     {
         int minutes = Mathf.FloorToInt(currentTime / 60);
@@ -120,6 +116,7 @@ public class CastleHealth : MonoBehaviour
         string timeString = string.Format("{0:00}:{1:00}", minutes, seconds);
         timerText.text = "" + timeString;
     }
+
     public void Pause()
     {
         PauseMenu.SetActive(true);
@@ -133,15 +130,42 @@ public class CastleHealth : MonoBehaviour
         Time.timeScale = 1f;
         IsPaused = false;
     }
+
     public void PlayAgain()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         Time.timeScale = 1f;
         IsPaused = false;
     }
+
     public void Exit()
     {
-        SceneManager.LoadScene("Menu");
+        SceneManager.LoadScene("LevelMap");
         Time.timeScale = 1f;
     }
 }
+//if (currenthealth < 10)
+//{
+//    Continue[0].SetActive(true);
+//    Continue[1].SetActive(false);
+//    Continue[2].SetActive(false);
+//    star[0].gameObject.GetComponent<Image>().sprite = starSprite;
+//}
+//else if (currenthealth < 15)
+//{
+//    Continue[1].SetActive(true);
+//    Continue[2].SetActive(false);
+//    Continue[0].SetActive(false);
+
+//    star[0].gameObject.GetComponent<Image>().sprite = starSprite;
+//    star[1].gameObject.GetComponent<Image>().sprite = starSprite;
+//}
+//else
+//{
+//    Continue[2].SetActive(true);
+//    Continue[1].SetActive(false);
+//    Continue[0].SetActive(false);
+//    star[0].gameObject.GetComponent<Image>().sprite = starSprite;
+//    star[1].gameObject.GetComponent<Image>().sprite = starSprite;
+//    star[2].gameObject.GetComponent<Image>().sprite = starSprite;
+//}

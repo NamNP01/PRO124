@@ -4,51 +4,48 @@ using TMPro;
 using UnityEngine;
 
 [System.Serializable]
-
 public class EnemyType
 {
-    public GameObject enemyPrefab; // Prefab của kẻ địch
-    public int count; // Số lượng loại kẻ địch này
-    public float spawnInterval; // Thời gian giữa mỗi lần spawn của loại kẻ địch này
+    public GameObject enemyPrefab;
+    public int count;
+    public float spawnInterval;
+    public Transform wavePath; // Thêm thuộc tính wavePath
 }
 
 [System.Serializable]
 public class Wave
 {
-    public List<EnemyType> enemies; // Danh sách các loại kẻ địch cho đợt này
+    public List<EnemyType> enemies;
 }
 
 public class EnemySpawner : MonoBehaviour
 {
-    public List<Wave> waves; // Danh sách các đợt sóng
-    public List<Transform> spawnPoints; // Danh sách các điểm spawn
-    public float waveInterval = 20f; // Khoảng thời gian giữa các đợt sóng (tính bằng giây)
+    public List<Wave> waves;
+    public List<Transform> spawnPoints;
+    public float waveInterval = 20f;
     public TextMeshProUGUI WaveText;
+    public GameObject win;
 
-    private int currentWave = 0; // Đợt sóng hiện tại
-    private float nextWaveTime; // Thời gian cho đợt sóng tiếp theo
+    private int currentWave = 0;
+    private float nextWaveTime;
     private bool isFirstWaveStarted = false;
+    private int enemiesRemaining = 0;
 
     void Start()
     {
-        // Tính toán thời gian cho đợt sóng đầu tiên
         nextWaveTime = Time.time + waveInterval;
     }
 
     void Update()
     {
-        if (isFirstWaveStarted)
+        if (isFirstWaveStarted && Time.time >= nextWaveTime && enemiesRemaining <= 0)
         {
-            if (Time.time >= nextWaveTime)
-            {
-                StartNextWave();
-            }
+            StartNextWave();
         }
     }
 
     public void StartFirstWave()
     {
-        // Chỉ bắt đầu đợt sóng đầu tiên nếu nó chưa bắt đầu
         if (currentWave == 0)
         {
             StartNextWave();
@@ -58,27 +55,26 @@ public class EnemySpawner : MonoBehaviour
 
     void StartNextWave()
     {
-
-        // Kiểm tra nếu hết đợt sóng
         if (currentWave >= waves.Count)
         {
-            Debug.Log("Đã hoàn thành tất cả các đợt sóng!");
+            if (enemiesRemaining <= 0)
+            {
+                win.SetActive(true);
+            }
             return;
         }
 
-        // Lấy đợt sóng hiện tại
         Wave wave = waves[currentWave];
-
-        // Tăng số đợt sóng lên
         currentWave++;
         WaveText.text = "Wave " + currentWave;
-        // Spawn kẻ địch cho đợt sóng này
+
         foreach (EnemyType enemyType in wave.enemies)
         {
+            enemiesRemaining += enemyType.count;
             StartCoroutine(SpawnEnemies(enemyType));
         }
 
-        // Tính toán thời gian cho đợt sóng tiếp theo
+        // Đặt lại thời gian của đợt tiếp theo
         nextWaveTime = Time.time + waveInterval;
     }
 
@@ -86,18 +82,63 @@ public class EnemySpawner : MonoBehaviour
     {
         for (int i = 0; i < enemyType.count; i++)
         {
-            SpawnEnemy(enemyType.enemyPrefab);
-            yield return new WaitForSeconds(enemyType.spawnInterval); // Sử dụng spawnInterval cho từng kẻ địch
+            SpawnEnemy(enemyType.enemyPrefab, enemyType.wavePath);
+            yield return new WaitForSeconds(enemyType.spawnInterval);
         }
     }
 
-    void SpawnEnemy(GameObject enemyPrefab)
+    void SpawnEnemy(GameObject enemyPrefab, Transform wavePath)
     {
-        // Chọn ngẫu nhiên một điểm spawn từ danh sách
-        Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
+        Transform spawnPoint = wavePath.Find("spawnPoint"); // Tìm điểm spawn có tên "spawnPoint" trong wavePath
+        if (spawnPoint == null)
+        {
+            Debug.LogError("Không tìm thấy spawnPoint trong wavePath");
+            return;
+        }
         Vector2 spawnPosition = spawnPoint.position;
 
-        // Spawn kẻ địch tại vị trí ngẫu nhiên
-        Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+        GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+        EnemyController enemyController = enemy.GetComponent<EnemyController>();
+
+        // Chuyển danh sách các điểm từ wavePath cho EnemyController
+        List<Transform> waypoints = new List<Transform>();
+        foreach (Transform child in wavePath)
+        {
+            if (child != spawnPoint) // Loại trừ điểm spawn
+            {
+                waypoints.Add(child);
+            }
+        }
+
+        enemyController.SetWaypoints(waypoints);
+
+        // Đăng ký sự kiện khi kẻ địch bị tiêu diệt
+        enemyController.OnEnemyDestroyed += HandleEnemyDestroyed;
+    }
+
+    void HandleEnemyDestroyed()
+    {
+        enemiesRemaining--;
+
+        if (enemiesRemaining <= 0)
+        {
+            // Nếu đã hoàn thành tất cả các đợt sóng, hiển thị chiến thắng
+            if (currentWave >= waves.Count)
+            {
+                CastleHealth castleHealth = FindObjectOfType<CastleHealth>();
+                if (castleHealth != null)
+                {
+                    castleHealth.UpdateStars();
+                }
+
+                win.SetActive(true);
+                Debug.Log("Đã hoàn thành tất cả các đợt sóng!");
+            }
+            else
+            {
+                // Đặt lại thời gian của đợt tiếp theo sau khi kết thúc một đợt
+                nextWaveTime = Time.time + waveInterval;
+            }
+        }
     }
 }

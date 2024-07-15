@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class ArcherTower : MonoBehaviour
 {
-    public enum TowerType { Archer, Stone, Fire, Magic }
+    public enum TowerType { Archer, Bomb, Fire, Magic }
 
     public TowerType towerType;
     public GameObject projectilePrefab;
@@ -18,6 +18,10 @@ public class ArcherTower : MonoBehaviour
     private GameObject target;
     private GameObject rangeCircle;
     public GameObject CirclePoint;
+
+    [Header("Audio")]
+    public AudioSource src;
+    public AudioClip Attack;
 
     public Animator animator; // Add an Animator reference
 
@@ -101,7 +105,8 @@ public class ArcherTower : MonoBehaviour
             // Left
             animator.SetTrigger("AttackLeft");
         }
-
+        src.clip = Attack;
+        src.Play();
         GameObject projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
         ProjectileController projectileController = projectile.GetComponent<ProjectileController>();
         if (projectileController != null)
@@ -142,7 +147,7 @@ public class ArcherTower : MonoBehaviour
         {
             Fire();
         }
-        else if (towerType == TowerType.Stone && target != null)
+        else if (towerType == TowerType.Bomb && target != null)
         {
             Stone();
         }
@@ -249,7 +254,7 @@ public class ArcherTower : MonoBehaviour
 
         yield return new WaitForSeconds(stoneVariables.damageOverTimeInterval);
 
-        if (towerType == TowerType.Stone && target != null)
+        if (towerType == TowerType.Bomb && target != null)
         {
             StartCoroutine(ApplyStoneDamageOverTime());
         }

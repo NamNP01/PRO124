@@ -7,12 +7,15 @@ public class Melee : MonoBehaviour
     public float lineOfSight; // Phạm vi nhìn thấy enemy
 
     [Header("Attack")]
-    private Transform enemy;
-    private Vector3 basePoint; // Điểm cơ sở để quay về
+    public int attackDamage; // Sát thương mỗi lần tấn công
     public float attackRange;
-    public float speedAttack;
+    public float speedAttack; // Tốc độ tấn công (thời gian giữa mỗi lần tấn công)
     private float nextAttackTime; // Thời gian tiếp theo có thể tấn công
-    private bool isAttacking = false;
+
+    private Transform enemy;
+    public Vector3 basePoint; // Điểm cơ sở để quay về
+    public bool isAttacking = false;
+    public Animator ani;
 
     private void Start()
     {
@@ -21,55 +24,95 @@ public class Melee : MonoBehaviour
 
     void Update()
     {
+        if (enemy != null && enemy.GetComponent<EnemyHealth>().currentHealth <= 0)
+        {
+            enemy = null;
+        }
+
         FindClosestEnemy();
 
         if (enemy != null)
         {
             float distanceFromEnemy = Vector2.Distance(enemy.position, transform.position);
-
-            // Nếu khoảng cách trong phạm vi nhìn thấy nhưng ngoài phạm vi tấn công
-            if (distanceFromEnemy < lineOfSight && distanceFromEnemy > attackRange)
+            EnemyController enemyController = enemy.GetComponent<EnemyController>();
+            if (enemy.GetComponent<EnemyHealth>().currentHealth <= 0)
             {
+                enemy = null;
                 isAttacking = false;
-                // Di chuyển về phía người chơi
-                transform.position = Vector2.MoveTowards(transform.position, enemy.position, speed * Time.deltaTime);
-
-                // Điều chỉnh hướng của kẻ địch về phía người chơi
-                if (transform.position.x < enemy.position.x)
-                {
-                    transform.localScale = new Vector2(-1, 1);
-                }
-                else
-                {
-                    transform.localScale = new Vector2(1, 1);
-                }
+                ReturnToBase();
+                return; // Thoát khỏi phương thức Update để không tiếp tục xử lý với enemy đã chết
             }
-            // Nếu khoảng cách trong phạm vi tấn công và có thể tấn công
-            else if (distanceFromEnemy <= attackRange && nextAttackTime < Time.time)
+            // Nếu enemy có thể bị chặn (canBlock là true)
+            if (enemyController != null && enemyController.canBlock)
             {
-                isAttacking = true;
-                nextAttackTime = Time.time + speedAttack; // Cập nhật thời gian tiếp theo có thể tấn công
-                Attack();
+                // Nếu khoảng cách trong phạm vi nhìn thấy nhưng ngoài phạm vi tấn công
+                if (distanceFromEnemy < lineOfSight && distanceFromEnemy > attackRange)
+                {
+                    // Chặn enemy lại
+                    enemyController.stopWalking();
+
+                    isAttacking = true;
+                    // Di chuyển về phía enemy
+                    ani.SetBool("Move",true);
+                    transform.position = Vector2.MoveTowards(transform.position, enemy.position, speed * Time.deltaTime);
+
+                    // Điều chỉnh hướng của kẻ địch về phía enemy
+                    if (transform.position.x < enemy.position.x)
+                    {
+                        transform.localScale = new Vector2(-1, 1);
+                        
+
+                    }
+                    else
+                    {
+                        transform.localScale = new Vector2(1, 1);
+                      
+
+                    }
+                }
+                // Nếu khoảng cách trong phạm vi tấn công và có thể tấn công
+                else if (distanceFromEnemy <= attackRange && nextAttackTime < Time.time)
+                {
+                    isAttacking = true;
+                    nextAttackTime = Time.time + speedAttack; // Cập nhật thời gian tiếp theo có thể tấn công
+                    Attack();
+                }
             }
         }
-        else
+        //else
+        //{
+        //    // Di chuyển về điểm cơ sở nếu không có kẻ địch
+        //    isAttacking = false;
+        //    ReturnToBase();
+        //}
+        //// Di chuyển về điểm cơ sở nếu không có kẻ địch hoặc không tấn công
+        if (!isAttacking && transform.position != basePoint)
         {
-            // Di chuyển về điểm cơ sở nếu không có kẻ địch
-            isAttacking = false;
-            transform.position = Vector2.MoveTowards(transform.position, basePoint, speed * Time.deltaTime);
-
-            // Điều chỉnh hướng của kẻ địch về phía điểm cơ sở
-            if (transform.position.x < basePoint.x)
-            {
-                transform.localScale = new Vector2(-1, 1);
-            }
-            else
-            {
-                transform.localScale = new Vector2(1, 1);
-            }
+            ReturnToBase();
         }
     }
+    void ReturnToBase()
+    {
+        // Logic để quay về điểm cơ sở (basePoint)
+        transform.position = Vector2.MoveTowards(transform.position, basePoint, speed * Time.deltaTime);
+        // Điều chỉnh hướng khi quay trở lại basePoint
+        if (transform.position.x < basePoint.x)
+        {
+            transform.localScale = new Vector2(-1, 1);
+            ani.SetBool("Move", true);
 
+        }
+        else if (transform.position.x > basePoint.x)
+        {
+            transform.localScale = new Vector2(1, 1);
+            ani.SetBool("Move", true);
+        }
+        else if (transform.position.x == basePoint.x)
+        {
+            ani.SetBool("Move", false);
+        }
+
+    }
     void FindClosestEnemy()
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
@@ -91,7 +134,23 @@ public class Melee : MonoBehaviour
 
     void Attack()
     {
-        // Thêm logic tấn công ở đây (ví dụ: giảm máu của kẻ địch)
+        if (enemy != null)
+        {
+            ani.SetTrigger("Attack");
+            EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
+            if (enemyHealth != null)
+            {
+                enemyHealth.TakeDamage(attackDamage); // Gây sát thương cho kẻ địch
+
+                if (enemyHealth.currentHealth <= 0)
+                {
+                    // Enemy đã chết, quay lại vị trí ban đầu
+                    enemy = null;
+                    isAttacking = false;
+                }
+            }
+        }
+        // Thêm logic tấn công khác nếu cần thiết
         Debug.Log("Tấn công kẻ địch!");
     }
 

@@ -5,7 +5,8 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
     public bool isSlowed;
-    public bool isAttackedByMelee;
+    public bool isBlockByMelee;
+    public bool canBlock=true;
     private Transform targetPosition;
     private Vector3 direction;
     private List<Transform> waypoints;
@@ -16,39 +17,51 @@ public class EnemyController : MonoBehaviour
 
     public Animator animator;
 
+    // Định nghĩa delegate
+    public delegate void EnemyDestroyedHandler();
+
+    // Định nghĩa sự kiện sử dụng delegate
+    public event EnemyDestroyedHandler OnEnemyDestroyed;
+
     void Start()
     {
-        GameObject[] waypointObjects = GameObject.FindGameObjectsWithTag("WayEnemy");
-        waypoints = new List<Transform>();
-        foreach (GameObject obj in waypointObjects)
-        {
-            waypoints.Add(obj.transform);
-        }
-        waypoints.Sort((a, b) => a.name.CompareTo(b.name));
+    }
+
+    public void SetWaypoints(List<Transform> waypoints)
+    {
+        this.waypoints = waypoints;
 
         if (waypoints.Count > 0)
         {
+            currentWaypointIndex = 0;
             targetPosition = waypoints[currentWaypointIndex];
             direction = (targetPosition.position - transform.position).normalized;
+            SetMovementAnimation(); // Gọi hàm để đặt animation lần đầu
         }
         else
         {
             targetPosition = GameObject.FindWithTag("Castle").transform;
+            direction = (targetPosition.position - transform.position).normalized;
+            SetMovementAnimation(); // Gọi hàm để đặt animation lần đầu
         }
     }
 
     void Update()
     {
-        if (targetPosition != null && !isAttackedByMelee)
+        if (targetPosition != null && !isBlockByMelee)
         {
             MoveTowardsTarget();
         }
     }
 
+    void OnDestroy()
+    {
+        // Kích hoạt sự kiện khi kẻ địch bị tiêu diệt
+        OnEnemyDestroyed?.Invoke();
+    }
+
     void MoveTowardsTarget()
     {
-        Vector3 previousPosition = transform.position; // Lưu vị trí trước khi di chuyển
-
         transform.Translate(direction * moveSpeed * Time.deltaTime, Space.World);
 
         Vector3 directionToTarget = targetPosition.position - transform.position;
@@ -56,36 +69,38 @@ public class EnemyController : MonoBehaviour
         {
             ReachTarget();
         }
-
-        // Tính toán hướng di chuyển
-        Vector3 movementDirection = (transform.position - previousPosition).normalized;
-        SetMovementAnimation(movementDirection); // Gọi hàm để đặt animation dựa trên hướng di chuyển
     }
 
-    void SetMovementAnimation(Vector3 movementDirection)
+    void SetMovementAnimation()
     {
         if (animator == null) return; // Kiểm tra xem animator có tồn tại không
 
-        if (Mathf.Abs(movementDirection.x) > Mathf.Abs(movementDirection.y))
+        if (currentWaypointIndex < waypoints.Count - 1)
         {
-            if (movementDirection.x > 0)
+            Transform currentWaypoint = waypoints[currentWaypointIndex];
+            Transform nextWaypoint = waypoints[currentWaypointIndex + 1];
+
+            if (Mathf.Abs(currentWaypoint.position.x - nextWaypoint.position.x) > Mathf.Abs(currentWaypoint.position.y - nextWaypoint.position.y))
             {
-                animator.SetTrigger("MoveRight");
+                if (currentWaypoint.position.x > nextWaypoint.position.x)
+                {
+                    animator.SetTrigger("MoveLeft");
+                }
+                else
+                {
+                    animator.SetTrigger("MoveRight");
+                }
             }
             else
             {
-                animator.SetTrigger("MoveLeft");
-            }
-        }
-        else
-        {
-            if (movementDirection.y > 0)
-            {
-                animator.SetTrigger("MoveUp");
-            }
-            else
-            {
-                animator.SetTrigger("MoveDown");
+                if (currentWaypoint.position.y > nextWaypoint.position.y)
+                {
+                    animator.SetTrigger("MoveDown");
+                }
+                else
+                {
+                    animator.SetTrigger("MoveUp");
+                }
             }
         }
     }
@@ -97,11 +112,13 @@ public class EnemyController : MonoBehaviour
             currentWaypointIndex++;
             targetPosition = waypoints[currentWaypointIndex];
             direction = (targetPosition.position - transform.position).normalized;
+            SetMovementAnimation(); // Gọi hàm để đặt animation mỗi khi qua 1 waypoint
         }
         else
         {
             targetPosition = GameObject.FindWithTag("Castle").transform;
             direction = (targetPosition.position - transform.position).normalized;
+            SetMovementAnimation(); // Gọi hàm để đặt animation khi đến điểm cuối
         }
     }
 
@@ -125,15 +142,13 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-
     public void stopWalking()
     {
-        isAttackedByMelee = true;
-        // Add other actions when stopping walking
+        isBlockByMelee = true;
     }
 
     public void setIsAttacked(bool value)
     {
-        isAttackedByMelee = value;
+        isBlockByMelee = value;
     }
 }
