@@ -151,4 +151,8 @@ public class EnemyController : MonoBehaviour
     {
         isBlockByMelee = value;
     }
+    public void ResetBlockStatus()
+    {
+        isBlockByMelee = false;
+    }
 }

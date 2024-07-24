@@ -9,7 +9,9 @@ public class EnemyHealth : MonoBehaviour
     public Animator ani; 
     private Transform target;
     public int damage;
-
+    [Header("Audio")]
+    public AudioSource src;
+    public AudioClip _Die;
 
     public void Seek(Transform target, int damage, ArcherTower.TowerType towerType, float slowAmount, float slowTime)
     {
@@ -50,6 +52,8 @@ public class EnemyHealth : MonoBehaviour
     }
     private void Die()
     {
+        src.clip = _Die;
+        src.Play();
         // Thực hiện các hành động khi enemy chết như phát hiện animation, thêm tiền, v.v.
         CoinManager.instance.AddCoins(coin);
         Destroy(gameObject, 0.3f);

@@ -16,10 +16,12 @@ public class Melee : MonoBehaviour
     public Vector3 basePoint; // Điểm cơ sở để quay về
     public bool isAttacking = false;
     public Animator ani;
+    private MeleeHeal meleeHeal;
 
     private void Start()
     {
         basePoint = transform.position; // Gán vị trí hiện tại của người chơi
+        meleeHeal = GetComponent<MeleeHeal>(); // Lấy tham chiếu đến MeleeHeal
     }
 
     void Update()
@@ -50,24 +52,21 @@ public class Melee : MonoBehaviour
                 {
                     // Chặn enemy lại
                     enemyController.stopWalking();
+                    meleeHeal.SetEnemy(enemy); // Gán enemy cho MeleeHeal script
 
                     isAttacking = true;
                     // Di chuyển về phía enemy
-                    ani.SetBool("Move",true);
+                    ani.SetBool("Move", true);
                     transform.position = Vector2.MoveTowards(transform.position, enemy.position, speed * Time.deltaTime);
 
                     // Điều chỉnh hướng của kẻ địch về phía enemy
                     if (transform.position.x < enemy.position.x)
                     {
                         transform.localScale = new Vector2(-1, 1);
-                        
-
                     }
                     else
                     {
                         transform.localScale = new Vector2(1, 1);
-                      
-
                     }
                 }
                 // Nếu khoảng cách trong phạm vi tấn công và có thể tấn công
@@ -79,18 +78,18 @@ public class Melee : MonoBehaviour
                 }
             }
         }
-        //else
-        //{
-        //    // Di chuyển về điểm cơ sở nếu không có kẻ địch
-        //    isAttacking = false;
-        //    ReturnToBase();
-        //}
-        //// Di chuyển về điểm cơ sở nếu không có kẻ địch hoặc không tấn công
+
+        // Di chuyển về điểm cơ sở nếu không có kẻ địch hoặc không tấn công
         if (!isAttacking && transform.position != basePoint)
         {
             ReturnToBase();
+            if (meleeHeal.currentHealth < meleeHeal.maxHealth)
+            {
+                StartCoroutine(meleeHeal.RegenerateHealth());
+            }
         }
     }
+
     void ReturnToBase()
     {
         // Logic để quay về điểm cơ sở (basePoint)
@@ -100,7 +99,6 @@ public class Melee : MonoBehaviour
         {
             transform.localScale = new Vector2(-1, 1);
             ani.SetBool("Move", true);
-
         }
         else if (transform.position.x > basePoint.x)
         {
@@ -111,8 +109,8 @@ public class Melee : MonoBehaviour
         {
             ani.SetBool("Move", false);
         }
-
     }
+
     void FindClosestEnemy()
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
@@ -150,7 +148,6 @@ public class Melee : MonoBehaviour
                 }
             }
         }
-        // Thêm logic tấn công khác nếu cần thiết
         Debug.Log("Tấn công kẻ địch!");
     }
 

@@ -31,7 +31,15 @@ public class EnemyHealing : MonoBehaviour
             if (enemyHealth != null && enemyHealth != this)
             {
                 enemyHealth.Heal(healAmount);
-                ShowHealEffect(ally.transform.position);
+                if (healEffect != null)
+                {
+                    Debug.Log("Healing effect instantiated at: " + ally.transform.position);
+                    ShowHealEffect(ally.transform.position);
+                }
+                else
+                {
+                    Debug.LogError("Heal effect is not assigned.");
+                }
             }
         }
     }

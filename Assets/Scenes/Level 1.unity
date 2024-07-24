@@ -6966,6 +6966,7 @@ MonoBehaviour:
   waveInterval: 5
   WaveText: {fileID: 2100622029}
   win: {fileID: 2010266098}
+  maxWave: 7
 --- !u!1 &503933155
 GameObject:
   m_ObjectHideFlags: 0
@@ -18657,7 +18658,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.6955083, y: 0}
   m_AnchorMax: {x: 0.7934917, y: 0.10868097}
-  m_AnchoredPosition: {x: 351, y: -554}
+  m_AnchoredPosition: {x: -24, y: 21}
   m_SizeDelta: {x: -79.01, y: 15.31}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1269803404
@@ -18682,7 +18683,7 @@ MonoBehaviour:
           m_MethodName: DragStart
           m_Mode: 2
           m_Arguments:
-            m_ObjectArgument: {fileID: 958360614851665955, guid: 903e2333292de7d44bc15152579cdedc, type: 3}
+            m_ObjectArgument: {fileID: 4233650249113151464, guid: aefa41a5f4f2f9d439dfc5c92bba0e30, type: 3}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
@@ -37511,8 +37512,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 31.9
-  m_fontSizeBase: 31.9
+  m_fontSize: 25.6
+  m_fontSizeBase: 25.6
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 5

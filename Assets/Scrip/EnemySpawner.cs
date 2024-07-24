@@ -27,6 +27,7 @@ public class EnemySpawner : MonoBehaviour
     public GameObject win;
 
     private int currentWave = 0;
+    public int maxWave;
     private float nextWaveTime;
     private bool isFirstWaveStarted = false;
     private int enemiesRemaining = 0;
@@ -66,7 +67,7 @@ public class EnemySpawner : MonoBehaviour
 
         Wave wave = waves[currentWave];
         currentWave++;
-        WaveText.text = "Wave " + currentWave;
+        WaveText.text = string.Format("Wave {0}/{1}", currentWave, maxWave);
 
         foreach (EnemyType enemyType in wave.enemies)
         {

@@ -2768,7 +2768,7 @@ Transform:
   m_GameObject: {fileID: 225588048}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -5.58, y: 3.77, z: 0}
+  m_LocalPosition: {x: -5.58, y: 3.77, z: 0.83}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12939,7 +12939,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.6955083, y: 0}
   m_AnchorMax: {x: 0.7934917, y: 0.10868097}
-  m_AnchoredPosition: {x: 351, y: -554}
+  m_AnchoredPosition: {x: -21.348999, y: 20.32898}
   m_SizeDelta: {x: -79.01, y: 15.31}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &989299850
@@ -12964,7 +12964,7 @@ MonoBehaviour:
           m_MethodName: DragStart
           m_Mode: 2
           m_Arguments:
-            m_ObjectArgument: {fileID: 958360614851665955, guid: 903e2333292de7d44bc15152579cdedc, type: 3}
+            m_ObjectArgument: {fileID: 4233650249113151464, guid: aefa41a5f4f2f9d439dfc5c92bba0e30, type: 3}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
@@ -25144,7 +25144,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -5, y: -1}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -411.3001, y: 147.59999}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1382596081
@@ -33524,7 +33524,7 @@ Transform:
   m_GameObject: {fileID: 1932031359}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -5.58, y: 3.77, z: 0}
+  m_LocalPosition: {x: -5.58, y: 3.77, z: 4.81}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

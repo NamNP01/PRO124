@@ -2814,7 +2814,6 @@ GameObject:
   - component: {fileID: 759824942}
   - component: {fileID: 759824941}
   - component: {fileID: 759824940}
-  - component: {fileID: 759824943}
   m_Layer: 5
   m_Name: NewGame
   m_TagString: Untagged
@@ -2886,14 +2885,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 759824943}
-        m_TargetAssemblyTypeName: LoadingScene, Assembly-CSharp
-        m_MethodName: LoadLevel
-        m_Mode: 3
+      - m_Target: {fileID: 1743590079}
+        m_TargetAssemblyTypeName: Login, Assembly-CSharp
+        m_MethodName: NewGame
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -2936,21 +2935,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 759824938}
   m_CullTransparentMesh: 1
---- !u!114 &759824943
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 759824938}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e4365c3f8eba7d740981387ef39ae525, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  loadingScene: {fileID: 1097215512}
-  slider: {fileID: 371350751}
-  progressText: {fileID: 1516753060}
 --- !u!1 &806155234
 GameObject:
   m_ObjectHideFlags: 0
@@ -4108,7 +4092,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1597444508}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: Login, Assembly-CSharp
         m_MethodName: CheckResetPass
         m_Mode: 1
@@ -4246,7 +4230,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1531007359}
-  - component: {fileID: 1531007360}
   m_Layer: 5
   m_Name: Register
   m_TagString: Untagged
@@ -4278,24 +4261,6 @@ RectTransform:
   m_AnchoredPosition: {x: -19, y: 14}
   m_SizeDelta: {x: 403.0333, y: 60.0001}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1531007360
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1531007358}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ef20be5ee20a6441a9b0c1869994f54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  userName: {fileID: 55370849}
-  passWord: {fileID: 615999349}
-  messageText: {fileID: 1988682847}
-  first: {fileID: 55370849}
-  login: {fileID: 0}
-  fogetPass: {fileID: 0}
 --- !u!1 &1584728095
 GameObject:
   m_ObjectHideFlags: 0
@@ -4411,7 +4376,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1597444507}
-  - component: {fileID: 1597444508}
   m_Layer: 5
   m_Name: Login
   m_TagString: Untagged
@@ -4444,24 +4408,6 @@ RectTransform:
   m_AnchoredPosition: {x: -19, y: 14}
   m_SizeDelta: {x: 403.0333, y: 60.0001}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1597444508
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1597444506}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ef20be5ee20a6441a9b0c1869994f54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  userName: {fileID: 52200955}
-  passWord: {fileID: 388957474}
-  messageText: {fileID: 635602905}
-  first: {fileID: 52200955}
-  login: {fileID: 2055690337}
-  fogetPass: {fileID: 1450855111}
 --- !u!1 &1675926104
 GameObject:
   m_ObjectHideFlags: 0
@@ -4690,7 +4636,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1597444508}
+      - m_Target: {fileID: 1743590079}
         m_TargetAssemblyTypeName: Login, Assembly-CSharp
         m_MethodName: CheckRegister
         m_Mode: 1
@@ -4855,6 +4801,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1743590078}
+  - component: {fileID: 1743590079}
   m_Layer: 5
   m_Name: MainMenu
   m_TagString: Untagged
@@ -4886,6 +4833,26 @@ RectTransform:
   m_AnchoredPosition: {x: -19, y: 14}
   m_SizeDelta: {x: 403.0333, y: 60.0001}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1743590079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1743590077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ef20be5ee20a6441a9b0c1869994f54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  userName: {fileID: 52200955}
+  passWord: {fileID: 388957474}
+  regName: {fileID: 55370849}
+  regPass: {fileID: 615999349}
+  messageText: {fileID: 1988682847}
+  first: {fileID: 0}
+  login: {fileID: 2055690337}
+  fogetPass: {fileID: 0}
 --- !u!1 &1819646802
 GameObject:
   m_ObjectHideFlags: 0
@@ -5819,7 +5786,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1597444508}
+      - m_Target: {fileID: 1743590079}
         m_TargetAssemblyTypeName: Login, Assembly-CSharp
         m_MethodName: CheckLogin
         m_Mode: 1

@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 
 public class Login : MonoBehaviour
 {
-    public TMP_InputField userName, passWord;
+    public TMP_InputField userName, passWord, regName, regPass;
     public TMP_Text messageText;
     public Selectable first;
     private EventSystem eventSystem;
@@ -18,16 +18,21 @@ public class Login : MonoBehaviour
 
 
 
+    public void NewGame()
+    {
+        SceneManager.LoadScene(1);
+        PlayerPrefs.DeleteAll();
+    }
     public void CheckRegister()
     {
-        if (passWord.text.Length < 6)
-        {
-            messageText.text ="";
-        }        
+        //if (passWord.text.Length < 6)
+        //{
+        //    messageText.text ="";
+        //}        
         var request = new RegisterPlayFabUserRequest
         {
-            Email = userName.text,
-            Password = passWord.text,            
+            Email = regName.text,
+            Password = regPass.text,            
             RequireBothUsernameAndEmail = false,
         };
         PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnError);
@@ -69,11 +74,13 @@ public class Login : MonoBehaviour
     void OnLoginSuccess(LoginResult result)
     {
         SceneManager.LoadScene(1);
+        PlayerPrefs.DeleteAll();
         messageText.text = "Đăng nhập thành công!";
     }    
     void OnError(PlayFabError error)
     {
         messageText.text = error.ErrorMessage;
         Debug.Log(error.GenerateErrorReport());
-    }    
+    }
+    
 }
